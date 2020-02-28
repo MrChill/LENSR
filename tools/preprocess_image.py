@@ -129,10 +129,6 @@ def iterate_images(iterate_info, iterate_annotation_train, iterate_train_img_dir
             iterate_info[img_name][key] = (img_name, (label1, b1), (label2, b2))
     return iterate_preprocessed_annotation_train, iterate_preprocessed_image_features_train, iterate_info
 
-preprocessed_annotation_test, preprocessed_image_features_test, info_test = \
-    iterate_images(info_test, annotation_test, test_img_dire, test_imgs, preprocessed_annotation_test,
-                   preprocessed_image_features_test)
-
 preprocessed_annotation_train, preprocessed_image_features_train, info_train = \
     iterate_images(info_train, annotation_train, train_img_dire, train_imgs, preprocessed_annotation_train,
                    preprocessed_image_features_train)
@@ -143,6 +139,10 @@ with open('../dataset/VRD/preprocessed_image_features_train.pk', 'wb') as f:
     pk.dump(preprocessed_image_features_train, f)
 
 pk.dump(info_train, open('../dataset/VRD/info_train.pk', 'wb'))
+
+preprocessed_annotation_test, preprocessed_image_features_test, info_test = \
+    iterate_images(info_test, annotation_test, test_img_dire, test_imgs, preprocessed_annotation_test,
+                   preprocessed_image_features_test)
 
 with open('../dataset/VRD/preprocessed_annotation_test.pk', 'wb') as f:
     pk.dump(preprocessed_annotation_test, f)
