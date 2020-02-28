@@ -13,6 +13,10 @@ from os import listdir
 from os.path import isfile, join
 from random import shuffle
 
+def listdir_jpg(path):
+    for f in listdir(path):
+        if f.endswith('.jpg'):
+            yield f
 
 class get_features(nn.Module):
     def __init__(self, ):
@@ -46,8 +50,8 @@ preprocess = transforms.Compose([transforms.Resize(size=(224, 224)), \
                                  transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                       std=[0.229, 0.224, 0.225])])
 
-train_imgs = [f for f in listdir(train_img_dire)]
-test_imgs = [f for f in listdir(test_img_dire)]
+train_imgs = [f for f in listdir_jpg(train_img_dire)]
+test_imgs = [f for f in listdir_jpg(test_img_dire)]
 
 model = get_features()
 
@@ -125,22 +129,24 @@ def iterate_images(iterate_info, iterate_annotation_train, iterate_train_img_dir
             iterate_info[img_name][key] = (img_name, (label1, b1), (label2, b2))
     return iterate_preprocessed_annotation_train, iterate_preprocessed_image_features_train, iterate_info
 
+preprocessed_annotation_test, preprocessed_image_features_test, info_test = \
+    iterate_images(info_test, annotation_test, test_img_dire, test_imgs, preprocessed_annotation_test,
+                   preprocessed_image_features_test)
 
 preprocessed_annotation_train, preprocessed_image_features_train, info_train = \
     iterate_images(info_train, annotation_train, train_img_dire, train_imgs, preprocessed_annotation_train,
                    preprocessed_image_features_train)
-preprocessed_annotation_test, preprocessed_image_features_test, info_test = \
-    iterate_images(info_test, annotation_test, test_img_dire, test_imgs, preprocessed_annotation_test,
-                   preprocessed_image_features_test)
 
 with open('../dataset/VRD/preprocessed_annotation_train.pk', 'wb') as f:
     pk.dump(preprocessed_annotation_train, f)
 with open('../dataset/VRD/preprocessed_image_features_train.pk', 'wb') as f:
     pk.dump(preprocessed_image_features_train, f)
+
+pk.dump(info_train, open('../dataset/VRD/info_train.pk', 'wb'))
+
 with open('../dataset/VRD/preprocessed_annotation_test.pk', 'wb') as f:
     pk.dump(preprocessed_annotation_test, f)
 with open('../dataset/VRD/preprocessed_image_features_test.pk', 'wb') as f:
     pk.dump(preprocessed_image_features_test, f)
 
-pk.dump(info_train, open('../dataset/VRD/info_train.pk', 'wb'))
 pk.dump(info_test, open('../dataset/VRD/info_test.pk', 'wb'))
